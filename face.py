@@ -2,15 +2,14 @@
 import os
 import torch
 from tqdm import tqdm
+import logging
 
 import numpy as np
-
 
 
 class FaceRecognitionModel:
 
     def __init__(self, backbone, header, loss):
-
         self.backbone = backbone
         self.header = header
         self.loss = loss
@@ -19,6 +18,8 @@ class FaceRecognitionModel:
         self.params = list(backbone.parameters())
         self.params.extend(list(header.parameters()))
 
+        #logging.info("")
+        print(f"Built FR Model: [{backbone.__class__.__name__} -> {header.__class__.__name__} -> {loss.__class__.__name__}]")
 
     def fit(self, train_dataset, epochs, batch_size, lr, device):
 

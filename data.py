@@ -35,11 +35,8 @@ class LFWDataset(torch.utils.data.Dataset):
 
         # download the correct pairs/people split files for the specified view if necessary and read them
         if mode == 'train':
-            #pairs_path = os.path.join(lfw_path, 'pairsDevTrain.txt')
             people_path = os.path.join(lfw_path, 'peopleDevTrain.txt')
 
-            #if not os.path.isfile(pairs_path):
-            #    http_get(url="http://vis-www.cs.umass.edu/lfw/pairsDevTrain.txt", path=pairs_path)
             if not os.path.isfile(people_path):
                 http_get(url="http://vis-www.cs.umass.edu/lfw/peopleDevTrain.txt", path=people_path)
 
@@ -47,15 +44,11 @@ class LFWDataset(torch.utils.data.Dataset):
             self.people = self.__read_lfw_people_from_file(people_path)
 
         elif mode == 'test':
-            #pairs_path = os.path.join(lfw_path, 'pairsDevTest.txt')
             people_path = os.path.join(lfw_path, 'peopleDevTest.txt')
 
-            #if not os.path.isfile(pairs_path):
-            #    http_get(url="http://vis-www.cs.umass.edu/lfw/pairsDevTest.txt", path=pairs_path)
             if not os.path.isfile(people_path):
                 http_get(url="http://vis-www.cs.umass.edu/lfw/peopleDevTest.txt", path=people_path)
 
-            #self.pairs = self.__read_lfw_pairs_from_file(pairs_path)
             self.people = self.__read_lfw_people_from_file(people_path)
 
         elif mode == 'benchmark':

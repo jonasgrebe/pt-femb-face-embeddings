@@ -11,7 +11,8 @@ def main():
 
     preprocessing = A.Compose([
         A.CenterCrop(112, 112),
-        A.Normalize()
+        A.Normalize(),
+        A.HorizontalFlip()
     ])
 
     train_dataset = LFWDataset(mode='train', transform=preprocessing)
@@ -23,10 +24,6 @@ def main():
     header = ArcFaceHeader(in_features=embed_dim, out_features=n_classes)
     loss = torch.nn.CrossEntropyLoss()
 
-    # join parameter sets of backbone and header
-    # params = params = list(backbone.parameters())
-    # params.extend(list(header.parameters()))
-
     # create the face recognition model wrapper
     face_model = FaceRecognitionModel(backbone=backbone, header=header, loss=loss)
 
@@ -34,7 +31,7 @@ def main():
     face_model.fit(
         train_dataset=train_dataset,
         epochs=10,
-        batch_size=64,
+        batch_size=32,
         lr=1e-2,
         device=torch.device('cuda')
         )
@@ -43,5 +40,4 @@ def main():
 
 
 if __name__ == '__main__':
-
     main()

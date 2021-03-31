@@ -19,6 +19,7 @@ class FaceRecognitionModel:
         self.params = list(backbone.parameters())
         self.params.extend(list(header.parameters()))
 
+
     def fit(self, train_dataset, epochs, batch_size, lr, device):
 
         train_dataloader = torch.utils.data.DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)

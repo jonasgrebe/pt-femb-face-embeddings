@@ -1,19 +1,16 @@
 import os
 import torch
+import torchvision
+import cv2
+
 from util import http_get, extract_archive
-
-
-class FaceDataset(torch.utils.data.Dataset):
-
-    def __init__(name='lfw'):
-        pass
-
-
 
 
 class LFWDataset(torch.utils.data.Dataset):
 
-    def __init__(self, mode='test', aligned=True, dataset_dir='datasets/'):
+    def __init__(self, mode='test', aligned=True, dataset_dir='datasets/', transform=None):
+
+        self.transform = transform
 
         lfw_path = os.path.join(dataset_dir, 'lfw-dataset')
 
@@ -54,7 +51,7 @@ class LFWDataset(torch.utils.data.Dataset):
         elif mode == 'benchmark':
             raise NotImplementedError
 
-        self.img_paths, self.img_identities = self.__get_lfw_img_paths(root=os.path.join(lfw_path, subfolder))
+        self.img_paths, self.img_identities, self.img_labels = self.__get_lfw_img_paths(root=os.path.join(lfw_path, subfolder))
 
 
     def __read_lfw_people_from_file(self, people_path):
@@ -72,21 +69,40 @@ class LFWDataset(torch.utils.data.Dataset):
 
         img_paths = []
         img_identities = []
+        img_labels = []
         for label, identity in enumerate(self.people):
             id_path = os.path.join(root, identity)
-            img_paths.extend([os.path.join(identity, img_file) for img_file in os.listdir(id_path)])
-            img_identities.extend([label] * len(os.listdir(id_path)))
-        return img_paths, img_identities
+            img_paths.extend([os.path.join(id_path, img_file) for img_file in os.listdir(id_path)])
+            img_identities.extend([identity] * len(os.listdir(id_path)))
+            img_labels.extend([label] * len(os.listdir(id_path)))
+        return img_paths, img_identities, img_labels
 
 
-    def __get_item__(self, idx):
+    def __len__(self):
+        return len(self.img_paths)
+
+
+    def get_n_identities(self):
+        return len(self.people)
+
+
+    def __getitem__(self, idx):
+        if torch.is_tensor(idx):
+            idx = idx.tolist()
+
+        if idx >= len(self):
+            raise IndexError
 
         img_path = self.img_paths[idx]
         img_identity = self.img_identities[idx]
+        img_label = self.img_labels[idx]
 
-        img = cv2.read(img_path)
+        img = cv2.imread(img_path)
+        if self.transform is not None:
+            img = self.transform(image=img)['image']
+        img = torchvision.transforms.functional.to_tensor(img).float()
 
-        return img, img_identity
+        return {'img': img, 'identity': img_identity, 'label': img_label}
 
 
 

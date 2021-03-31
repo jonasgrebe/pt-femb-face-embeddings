@@ -1,22 +1,11 @@
 import torch
 
-class FaceLossHeader(torch.nn.Module):
 
-    def __init__(self, in_features, out_features):
-        super(FaceLossHeader, self).__init__()
-
-        self.in_features = in_features
-        self.out_features = out_features
-
-    def forward(self, input, label):
-        return self.linear(input)
-
-
-class LinearHeader(FaceLossHeader):
+class LinearHeader(torch.nn.Module):
     """ Linear Header class"""
 
     def __init__(self, in_features, out_features):
-        super(LinearHeader, self).__init__(in_features, out_features)
+        super(LinearHeader, self).__init__()
 
         self.in_features = in_features
         self.out_features = out_features
@@ -27,11 +16,11 @@ class LinearHeader(FaceLossHeader):
         return self.linear(input)
 
 
-class ArcFaceHeader(FaceLossHeader):
+class ArcFaceHeader(torch.nn.Module):
     """ ArcFaceHeader class"""
 
     def __init__(self, in_features, out_features, s=64.0, m=0.5):
-        super(ArcFaceHeader, self).__init__(in_features, out_features)
+        super(ArcFaceHeader, self).__init__()
 
         self.in_features = in_features
         self.out_features = out_features
@@ -41,7 +30,6 @@ class ArcFaceHeader(FaceLossHeader):
 
         self.linear = torch.nn.Linear(in_features=in_features, out_features=out_features, bias=False)
         self.normalize = torch.nn.functional.normalize
-
 
 
     def forward(self, input, label):
@@ -66,17 +54,16 @@ class ArcFaceHeader(FaceLossHeader):
         return output
 
 
-class MagFaceHeader(FaceLossHeader):
+class MagFaceHeader(torch.nn.Module):
     """ MagFaceHeader class"""
 
-    def __init__(self, in_features, out_features, s=64.0, m=0.5, l_a, u_m, l_a, u_m, lambda_g):
-        super(MagFaceHeader, self).__init__(in_features, out_features)
+    def __init__(self, in_features, out_features, s=64.0, l_a=10, u_a=110, l_m=0.45, u_m=0.8, lambda_g=20):
+        super(MagFaceHeader, self).__init__()
 
         self.in_features = in_features
         self.out_features = out_features
 
         self.s = s
-        self.m = m
 
         self.l_a = l_a
         self.u_a = u_a
@@ -103,7 +90,7 @@ class MagFaceHeader(FaceLossHeader):
         logits = self.linear(self.normalize(input))
 
         # difference compared to arcface
-        a = torch.norm(x, dim=1, keepdims=True).clamp(l_a, u_a)
+        a = torch.norm(input, dim=1, keepdim=True).clamp(self.l_a, self.u_a)
         m = self.compute_m(a)
         g = self.compute_g(a)
 
@@ -122,4 +109,4 @@ class MagFaceHeader(FaceLossHeader):
         # feature re-scaling
         output *= self.s
 
-        return output + lambda_g * g
+        return output + self.lambda_g * g

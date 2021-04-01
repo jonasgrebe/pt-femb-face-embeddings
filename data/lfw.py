@@ -3,16 +3,34 @@ import torch
 import torchvision
 import cv2
 
+from imageio import imread
+
 from util import http_get, extract_archive
 
 
-class LFWDataset(torch.utils.data.Dataset):
+class FaceDataset(torch.utils.data.Dataset):
 
-    def __init__(self, mode='test', aligned=True, dataset_dir='datasets/', transform=None):
-
+    def __init__(self, dataset_dir='datasets/', transform=None):
+        self.dataset_dir = dataset_dir
         self.transform = transform
 
-        lfw_path = os.path.join(dataset_dir, 'lfw-dataset')
+    def __len__(self):
+        raise NotImplementedError
+
+    def __getitem__(self, idx):
+        raise NotImplementedError
+
+    def get_n_identities(self):
+        raise NotImplementedError
+
+
+
+class LFWDataset(FaceDataset):
+
+    def __init__(self, mode='test', aligned=True, dataset_dir='datasets/', transform=None):
+        super(LFWDataset, self).__init__(dataset_dir, transform)
+
+        lfw_path = os.path.join(self.dataset_dir, 'lfw-dataset')
 
         if aligned:
             subfolder = 'lfw-deepfunneled'
@@ -21,7 +39,7 @@ class LFWDataset(torch.utils.data.Dataset):
             subfolder = 'lfw'
             download_url = "http://vis-www.cs.umass.edu/lfw/lfw.tgz"
 
-        tgz_path = os.path.join(dataset_dir, os.path.basename(download_url))
+        tgz_path = os.path.join(self.dataset_dir, os.path.basename(download_url))
 
         # download lfw .tgz file if necessary
         if not os.path.isfile(tgz_path):
@@ -37,7 +55,6 @@ class LFWDataset(torch.utils.data.Dataset):
             if not os.path.isfile(people_path):
                 http_get(url="http://vis-www.cs.umass.edu/lfw/peopleDevTrain.txt", path=people_path)
 
-            #self.pairs = self.__read_lfw_pairs_from_file(pairs_path)
             self.people = self.__read_lfw_people_from_file(people_path)
 
         elif mode == 'test':
@@ -82,10 +99,6 @@ class LFWDataset(torch.utils.data.Dataset):
         return len(self.img_paths)
 
 
-    def get_n_identities(self):
-        return len(self.people)
-
-
     def __getitem__(self, idx):
         if torch.is_tensor(idx):
             idx = idx.tolist()
@@ -97,13 +110,18 @@ class LFWDataset(torch.utils.data.Dataset):
         img_identity = self.img_identities[idx]
         img_label = self.img_labels[idx]
 
-        img = cv2.imread(img_path)
+        img = imread(img_path)
+
         if self.transform is not None:
             img = self.transform(image=img)['image']
+
         img = torchvision.transforms.functional.to_tensor(img).float()
 
-        return {'img': img, 'identity': img_identity, 'label': img_label}
+        return {'image': img, 'identity': img_identity, 'label': img_label}
 
+
+    def get_n_identities(self):
+        return len(self.people)
 
 
 if __name__ == '__main__':

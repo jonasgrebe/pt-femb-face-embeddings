@@ -5,6 +5,7 @@ from tqdm import tqdm
 import logging
 
 import numpy as np
+import torchvision
 
 
 class FaceRecognitionModel:
@@ -21,11 +22,13 @@ class FaceRecognitionModel:
         #logging.info("")
         print(f"Built FR Model: [{backbone.__class__.__name__} -> {header.__class__.__name__} -> {loss.__class__.__name__}]")
 
-    def fit(self, train_dataset, epochs, batch_size, lr, device):
+
+    def fit(self, train_dataset, epochs, batch_size, initial_lr, device, evaluator=None):
 
         train_dataloader = torch.utils.data.DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
 
-        optimizer = torch.optim.SGD(params=self.params, lr=lr)
+        optimizer = torch.optim.SGD(params=self.params, lr=initial_lr, momentum=0.9, weight_decay=5e-4)
+        lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer=optimizer, milestones=[10,18,22], gamma=0.1)
 
         self.header.to(device)
         self.backbone.to(device)
@@ -39,7 +42,7 @@ class FaceRecognitionModel:
             pbar = tqdm(enumerate(train_dataloader))
             for step, batch in pbar:
 
-                inputs = batch['img'].to(device)
+                inputs = batch['image'].to(device)
                 labels = batch['label'].to(device).long().view(-1)
 
                 features = self.backbone(inputs)
@@ -56,6 +59,14 @@ class FaceRecognitionModel:
 
                 pbar.set_description_str(f"[{e}/{epochs}]({step+1}/{len(train_dataloader)}) - Train_Loss: {train_losses[:step+1].mean()}")
 
+            if evaluator is not None:
+                evaluator(model=self.backbone, epoch=e, device=device)
 
-    def encode(self):
-        raise NotImplementedError
+            if lr_scheduler is not None:
+                lr_scheduler.step()
+
+
+    def encode(self, imgs, device):
+        batch = [torchvision.transforms.functional.to_tensor(img) for img in imgs]
+        batch = torch.stack(batch).to(device)
+        return self.backbone(batch).cpu().detach().numpy()

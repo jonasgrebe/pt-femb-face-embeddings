@@ -1,6 +1,5 @@
 import torch
 from torch import nn
-# from torchvision.models.utils import load_state_dict_from_url
 
 __all__ = ['iresnet18', 'iresnet34', 'iresnet50', 'iresnet100']
 
@@ -37,6 +36,7 @@ class IBasicBlock(nn.Module):
         self.bn3 = nn.BatchNorm2d(planes, eps=2e-05, momentum=0.9)
         self.downsample = downsample
         self.stride = stride
+
 
     def forward(self, x):
         identity = x
@@ -148,30 +148,26 @@ class IResNet(nn.Module):
         return x
 
 
-def _iresnet(arch, block, layers, pretrained, progress, **kwargs):
+def _iresnet(arch, block, layers, progress, **kwargs):
     model = IResNet(block, layers, **kwargs)
-    # if pretrained:
-    # state_dict = load_state_dict_from_url(model_urls[arch],
-    #                                        progress=progress)
-    # model.load_state_dict(state_dict)
     return model
 
 
-def iresnet18(pretrained=False, progress=True, **kwargs):
-    return _iresnet('iresnet18', IBasicBlock, [2, 2, 2, 2], pretrained, progress,
+def iresnet18(progress=True, **kwargs):
+    return _iresnet('iresnet18', IBasicBlock, [2, 2, 2, 2], progress,
                     **kwargs)
 
 
-def iresnet34(pretrained=False, progress=True, **kwargs):
-    return _iresnet('iresnet34', IBasicBlock, [3, 4, 6, 3], pretrained, progress,
+def iresnet34(progress=True, **kwargs):
+    return _iresnet('iresnet34', IBasicBlock, [3, 4, 6, 3], progress,
                     **kwargs)
 
 
-def iresnet50(pretrained=False, progress=True, **kwargs):
-    return _iresnet('iresnet50', IBasicBlock, [3, 4, 14, 3], pretrained, progress,
+def iresnet50(progress=True, **kwargs):
+    return _iresnet('iresnet50', IBasicBlock, [3, 4, 14, 3], progress,
                     **kwargs)
 
 
-def iresnet100(pretrained=False, progress=True, **kwargs):
-    return _iresnet('iresnet100', IBasicBlock, [3, 13, 30, 3], pretrained, progress,
+def iresnet100(progress=True, **kwargs):
+    return _iresnet('iresnet100', IBasicBlock, [3, 13, 30, 3], progress,
                     **kwargs)

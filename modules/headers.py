@@ -81,7 +81,7 @@ class MagFaceHeader(torch.nn.Module):
 
 
     def compute_g(self, a):
-        return torch.mean(1 / self.u_a**2 * a + 1 / a)
+        return torch.mean( (1 / self.u_a**2) * a + 1 / a)
 
 
     def forward(self, input, label):

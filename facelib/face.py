@@ -8,7 +8,7 @@ import numpy as np
 import torchvision
 
 
-class FaceRecognitionModel:
+class FaceEmbeddingModel:
 
     def __init__(self, backbone, header, loss):
         self.backbone = backbone

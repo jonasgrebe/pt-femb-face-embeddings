@@ -1,6 +1,6 @@
 import torchvision
 
-from modules.networks import iresnet
+from .networks import *
 
 def build_backbone(backbone, embed_dim):
 

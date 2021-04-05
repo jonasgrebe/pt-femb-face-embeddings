@@ -2,13 +2,13 @@ import torch
 from tqdm import tqdm
 import numpy as np
 
-from evaluation.similarity import get_similarity_function
-
 from itertools import combinations, product
 from sklearn.metrics import roc_curve
 
+from femb.evaluation.similarity import get_similarity_function
 
-class BiometricEvaluator:
+
+class VerificationEvaluator:
 
     def __init__(self, dataset, similarity, metrics=['eer'], limit=50, batch_size=32):
 
@@ -57,7 +57,6 @@ class BiometricEvaluator:
             'eer': eer,
             'eer_threshold': eer_threshold,
         }
-
 
         return eer
 

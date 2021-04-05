@@ -1,4 +1,4 @@
-from facelib.data import LFWDataset, FaceImageFolderDataset
+from femb.data import LFWDataset, FaceImageFolderDataset
 
 
 lfw = LFWDataset(split='all', aligned=False)
@@ -15,6 +15,6 @@ print(lfw.get_n_identities())
 print(lfw.get_n_images())
 
 
-from facelib.modules import LinearHeader
+from femb.headers import LinearHeader
 
 header = LinearHeader(1, 1)

@@ -23,12 +23,9 @@ class FaceEmbeddingModel:
         print(f"Built FR Model: [{backbone.__class__.__name__} -> {header.__class__.__name__} -> {loss.__class__.__name__}]")
 
 
-    def fit(self, train_dataset, epochs, batch_size, initial_lr, device, evaluator=None):
+    def fit(self, train_dataset, epochs, batch_size, device, optimizer, lr_scheduler=None, evaluator=None):
 
         train_dataloader = torch.utils.data.DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
-
-        optimizer = torch.optim.SGD(params=self.params, lr=initial_lr, momentum=0.9, weight_decay=5e-4)
-        lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer=optimizer, milestones=[10,18,22], gamma=0.1)
 
         self.header.to(device)
         self.backbone.to(device)

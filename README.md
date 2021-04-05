@@ -1,2 +1,2 @@
-# pt-arcface-magface
+# femb - Small Face Embedding Library
  

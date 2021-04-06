@@ -20,12 +20,15 @@ class FaceEmbeddingModel:
         self.params.extend(list(header.parameters()))
 
         #logging.info("")
-        print(f"Built FR Model: [{backbone.__class__.__name__} -> {header.__class__.__name__} -> {loss.__class__.__name__}]")
+        print(f"Built Embedding Model: [{backbone.__class__.__name__} -> {header.__class__.__name__} -> {loss.__class__.__name__}]")
 
 
     def fit(self, train_dataset, epochs, batch_size, device, optimizer, lr_scheduler=None, evaluator=None):
 
         train_dataloader = torch.utils.data.DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
+
+        if type(device) == str:
+            device = torch.device(device)
 
         self.header.to(device)
         self.backbone.to(device)
@@ -57,7 +60,7 @@ class FaceEmbeddingModel:
                 pbar.set_description_str(f"[{e}/{epochs}]({step+1}/{len(train_dataloader)}) - Train_Loss: {train_losses[:step+1].mean()}")
 
             if evaluator is not None:
-                evaluator(model=self.backbone, epoch=e, device=device)
+                evaluator(model=self.backbone, epoch=e, step=step, device=device)
 
             if lr_scheduler is not None:
                 lr_scheduler.step()

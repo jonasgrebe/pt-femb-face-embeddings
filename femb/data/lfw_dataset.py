@@ -7,13 +7,13 @@ import numpy as np
 class LFWDataset(FaceImageFolderDataset):
 
     def __init__(self, download=True, aligned=True, split='test', **kwargs):
-        super(LFWDataset, self).__init__(name='lfw' if not aligned else 'lfw-deepfunneled', **kwargs)
+        super(LFWDataset, self).__init__(name='lfw' if not aligned else 'lfw-deepfunneled', auto_initialize=False, **kwargs)
 
         self.download = download
         self.aligned = aligned
         self.split = split
 
-        if download:
+        if download and not self.dataset_exists():
             self.download_dataset()
 
         self.init_from_directories()
@@ -27,10 +27,11 @@ class LFWDataset(FaceImageFolderDataset):
         if self.split in ['test', 'all']:
             people.extend(self.__read_lfw_people_from_file(people_test_path))
 
-        split_idxs = np.where(np.isin(self.img_ids, people))[0]
-        self.img_paths = [self.img_paths[idx] for idx in split_idxs]
-        self.img_ids = [self.img_ids[idx] for idx in split_idxs]
-        self.img_labels = [self.img_labels[idx] for idx in split_idxs]
+        if split != 'all':
+            split_idxs = np.where(np.isin(self.img_ids, people))[0]
+            self.img_paths = [self.img_paths[idx] for idx in split_idxs]
+            self.img_ids = [self.img_ids[idx] for idx in split_idxs]
+            self.img_id_labels = [self.img_id_labels[idx] for idx in split_idxs]
 
 
     def download_dataset(self):

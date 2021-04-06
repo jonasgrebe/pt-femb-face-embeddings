@@ -1,1 +1,1 @@
-from .verification import VerificationEvaluator
+from .verification_evaluator import VerificationEvaluator

@@ -1,26 +1,17 @@
 import torch
+from .arcface import ArcFaceHeader
 
 
-class MagFaceHeader(torch.nn.Module):
+class MagFaceHeader(ArcFaceHeader):
     """ MagFaceHeader class"""
 
     def __init__(self, in_features, out_features, s=64.0, l_a=10, u_a=110, l_m=0.45, u_m=0.8, lambda_g=20):
-        super(MagFaceHeader, self).__init__()
-
-        self.in_features = in_features
-        self.out_features = out_features
-
-        self.s = s
+        super(MagFaceHeader, self).__init__(in_features=in_features, out_features=out_features, s=s, m=None)
 
         self.l_a = l_a
         self.u_a = u_a
         self.l_m = l_m
         self.u_m = u_m
-
-        self.lambda_g = lambda_g
-
-        self.linear = torch.nn.Linear(in_features=in_features, out_features=out_features, bias=False)
-        self.normalize = torch.nn.functional.normalize
 
 
     def compute_m(self, a):

@@ -13,6 +13,8 @@ class MagFaceHeader(ArcFaceHeader):
         self.l_m = l_m
         self.u_m = u_m
 
+        self.lambda_g = lambda_g
+
 
     def compute_m(self, a):
         return (self.u_m - self.l_m) / (self.u_a - self.l_a) * (a - self.l_a) + self.l_m

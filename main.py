@@ -29,7 +29,7 @@ def main():
 
     # build backbone, header and ce loss
     backbone = build_backbone(backbone="iresnet18", embed_dim=embed_dim)
-    header = SphereFaceHeader(in_features=embed_dim, out_features=n_classes)
+    header = MagFaceHeader(in_features=embed_dim, out_features=n_classes)
     loss = torch.nn.CrossEntropyLoss()
 
     # create the face recognition model wrapper

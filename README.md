@@ -1,6 +1,10 @@
 # femb - Small Face Embedding Library
 
 ```python
+from femb.backbones import build_backbone
+from femb.headers import ArcFaceHeader
+from femb import FaceEmbeddingModel
+
 backbone = build_backbone(backbone="iresnet18", embed_dim=embed_dim)
 header = ArcFaceHeader(in_features=embed_dim, out_features=train_n_classes)
 loss = torch.nn.CrossEntropyLoss()
@@ -14,6 +18,8 @@ face_model = FaceEmbeddingModel(backbone=backbone, header=header, loss=loss)
 + **Loss**: The loss function that is used to judge how good the (manipulated) logits match the one-hot encoded identity target. Usually, this is the cross-entropy loss.
 
 ```python
+from femb.evaluation import VerificationEvaluator
+
 evaluator = VerificationEvaluator(similarity='cos')
 optimizer = torch.optim.SGD(params=face_model.params, lr=1e-1, momentum=0.9, weight_decay=5e-4)
 

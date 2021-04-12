@@ -57,9 +57,10 @@ def main():
         lr_global_step_scheduler=None,
         evaluator=evaluator,
         val_dataset=val_dataset,
-        evaluation_steps=2000,
+        evaluation_steps=10,
         max_training_steps=20000,
-        max_epochs=0
+        max_epochs=0,
+        tensorboard=True
         )
 
 

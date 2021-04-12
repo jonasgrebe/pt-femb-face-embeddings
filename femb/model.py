@@ -105,16 +105,6 @@ class FaceEmbeddingModel:
                 loss_value.backward()
                 optimizer.step()
 
-                if global_step % 250 == 0:
-                    inputs = inputs.detach().cpu().numpy()
-                    features = features.detach().cpu().numpy()
-                    outputs = outputs.detach().cpu().numpy()
-
-                    logging.info("input:" + str(inputs.shape) + ' ' + str(inputs.mean()) + ' ' + str(inputs.min()) + ' ' + str(inputs.max()))
-                    logging.info("feature:" + ' ' + str(features.shape) + ' ' + str(features.mean()) + ' ' + str(features.min()) + ' ' + str(features.max()))
-                    logging.info("output:" + ' ' + str(outputs.shape) + ' ' + str(outputs.mean()) + ' ' + str(outputs.min()) + ' ' + str(outputs.max()))
-
-                # TODO: Handle this more elegantly! Use logging/printing wisely and modularly
                 status = self.get_status_format_string(epoch, step, train_dataloader, global_step, max_epochs, max_training_steps, train_losses)
                 pbar.set_description_str(status)
 
@@ -188,6 +178,9 @@ class FaceEmbeddingModel:
         if return_labels:
             encoded.append(np.array(all_labels))
         if return_thumbnails:
-            encoded.append(np.array(all_thumbnails).transpose(0, 3, 1, 2))
+            all_thumbnails = np.array(all_thumbnails)
+            if len(all_thumbnails.shape) == 3:
+                all_thumbnails = np.expand_dims(all_thumbnails, axis=-1)
+            encoded.append(all_thumbnails.transpose(0, 3, 1, 2))
 
         return encoded

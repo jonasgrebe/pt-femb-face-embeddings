@@ -6,9 +6,9 @@ import numpy as np
 
 class CelebADataset(FaceDataset):
 
-    def __init__(self, download=True, aligned=True, split='test', **kwargs):
+    def __init__(self, download=True, name='celeba', aligned=True, split='test', **kwargs):
         assert aligned
-        super(CelebADataset, self).__init__(name='celeba', **kwargs)
+        super(CelebADataset, self).__init__(name=name, **kwargs)
 
         self.download = download
         self.aligned = aligned
@@ -22,8 +22,7 @@ class CelebADataset(FaceDataset):
 
         if split != 'all':
             split_idxs = self.__read_celeba_split_mask_from_file(celeba_partition_file, split=split)
-            self.img_paths = [self.img_paths[idx] for idx in split_idxs]
-            self.img_id_labels = [self.img_id_labels[idx] for idx in split_idxs]
+            self.reduce_to_sample_idxs(split_idxs)
 
 
     def download_dataset(self):

@@ -1,3 +1,5 @@
+# Taken from: https://github.com/IrvingMeng/MagFace/blob/main/models/iresnet.py
+
 import torch
 from torch import nn
 
@@ -6,8 +8,7 @@ __all__ = ['iresnet18', 'iresnet34', 'iresnet50', 'iresnet100']
 
 def conv3x3(in_planes, out_planes, stride=1, groups=1, dilation=1):
     """3x3 convolution with padding"""
-    return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride,
-                     padding=dilation, groups=groups, bias=False, dilation=dilation)
+    return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride, padding=dilation, groups=groups, bias=False, dilation=dilation)
 
 
 def conv1x1(in_planes, out_planes, stride=1):
@@ -18,15 +19,18 @@ def conv1x1(in_planes, out_planes, stride=1):
 class IBasicBlock(nn.Module):
     expansion = 1
 
-    def __init__(self, inplanes, planes, stride=1, downsample=None, groups=1,
-                 base_width=64, dilation=1):
+    def __init__(self, inplanes, planes, stride=1, downsample=None, groups=1, base_width=64, dilation=1):
+
         super(IBasicBlock, self).__init__()
+
         if groups != 1 or base_width != 64:
             raise ValueError(
                 'BasicBlock only supports groups=1 and base_width=64')
+
         if dilation > 1:
             raise NotImplementedError(
                 "Dilation > 1 not supported in BasicBlock")
+
         # Both self.conv1 and self.downsample layers downsample the input when stride != 1
         self.bn1 = nn.BatchNorm2d(inplanes, eps=2e-05, momentum=0.9)
         self.conv1 = conv3x3(inplanes, planes)
@@ -59,16 +63,17 @@ class IBasicBlock(nn.Module):
 class IResNet(nn.Module):
     fc_scale = 7 * 7
 
-    def __init__(self, block, layers, num_classes=512, zero_init_residual=False,
-                 groups=1, width_per_group=64, replace_stride_with_dilation=None):
+    def __init__(self, block, layers, num_classes=512, zero_init_residual=False, groups=1, width_per_group=64, replace_stride_with_dilation=None):
         super(IResNet, self).__init__()
 
         self.inplanes = 64
         self.dilation = 1
+
         if replace_stride_with_dilation is None:
             # each element in the tuple indicates if we should replace
             # the 2x2 stride with a dilated convolution instead
             replace_stride_with_dilation = [False, False, False]
+
         if len(replace_stride_with_dilation) != 3:
             raise ValueError("replace_stride_with_dilation should be None "
                              "or a 3-element tuple, got {}".format(replace_stride_with_dilation))

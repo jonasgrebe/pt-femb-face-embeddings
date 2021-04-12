@@ -7,7 +7,7 @@ def l2_sim(x, y):
 
 def cos_sim(x, y):
     x, y = x.reshape(-1), y.reshape(-1)
-    return np.dot(x, y) / (1e-16 + np.linalg.norm(x) * np.linalg.norm(y))
+    return np.dot(x, y) / (1e-10 + np.linalg.norm(x) * np.linalg.norm(y))
 
 
 def get_similarity_function(similarity):

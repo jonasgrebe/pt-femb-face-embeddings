@@ -38,9 +38,3 @@ class FaceImageFolderDataset(FaceDataset):
     def dataset_exists(self):
         images_dir = os.path.join(self.root, self.name, 'images')
         return os.path.isdir(images_dir) and len(os.listdir(images_dir)) > 0
-
-
-    def __getitem__(self, idx):
-        sample = super(FaceImageFolderDataset, self).__getitem__(idx)
-        sample['id'] = self.img_ids[idx]
-        return sample

@@ -1,14 +1,12 @@
-
-
 class Evaluator:
 
     def __init__(self):
         pass
 
 
+    def __call__(self, features, labels):
+        return self.evaluate(features, labels)
+
+
     def evaluate(self, features, labels):
-        pass
-
-
-    def save_embedding_model(self):
-        pass
+        raise NotImplementedError

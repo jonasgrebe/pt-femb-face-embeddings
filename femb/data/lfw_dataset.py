@@ -29,9 +29,7 @@ class LFWDataset(FaceImageFolderDataset):
 
         if split != 'all':
             split_idxs = np.where(np.isin(self.img_ids, people))[0]
-            self.img_paths = [self.img_paths[idx] for idx in split_idxs]
-            self.img_ids = [self.img_ids[idx] for idx in split_idxs]
-            self.img_id_labels = [self.img_id_labels[idx] for idx in split_idxs]
+            self.reduce_to_sample_idxs(split_idxs)
 
 
     def download_dataset(self):

@@ -10,8 +10,8 @@ face_model = FaceEmbeddingModel(backbone=backbone, header=header, loss=loss)
 
 #### Basic Framework:
 + **Backbone**: The actual embedding network that we want to train. It takes some kind of input and produces a feature representation (embedding) of a certain dimensionality.
-+ **Header**: A training-only extension to the backbone network that is used to manipulate the predicted values for the loss function. This is the main part where the implemented methods (SphereFace, CosFace, ...) differ.
-+ **Loss**: The loss function that is used to judge how good the (manipulated) embeddings are. Usually, this is the cross-entropy loss.
++ **Header**: A training-only extension to the backbone network that is used to predict the identity class logits for the loss function. This is the main part where the implemented methods (SphereFace, CosFace, ...) differ.
++ **Loss**: The loss function that is used to judge how good the (manipulated) logits are. Usually, this is the cross-entropy loss.
 
 ```python
 evaluator = VerificationEvaluator(similarity='cos')

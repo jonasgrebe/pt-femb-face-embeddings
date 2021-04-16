@@ -4,7 +4,7 @@ import torch
 class ArcMarginHeader(torch.nn.Module):
     """ ArcMarginHeader class"""
 
-    def __init__(self, in_features, out_features, s, m1=1, m2=0, m3=0):
+    def __init__(self, in_features, out_features, s=1, m1=1, m2=0, m3=0):
         super(ArcMarginHeader, self).__init__()
 
         self.in_features = in_features
@@ -25,7 +25,7 @@ class ArcMarginHeader(torch.nn.Module):
         # multiply normed features (input) and normed weights to obtain cosine of theta (logits)
         self.linear.weight = torch.nn.Parameter(self.normalize(self.linear.weight))
         logits = self.linear(self.normalize(input)).clamp(-1 + self.epsilon, 1 - self.epsilon)
-        
+
         # apply arccos to get theta
         theta = torch.acos(logits).clamp(-1, 1)
 

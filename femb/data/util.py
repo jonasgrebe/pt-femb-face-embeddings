@@ -1,8 +1,9 @@
+# Taken from: https://github.com/UKPLab/sentence-transformers/blob/master/sentence_transformers/util.py
+
 import os
 import requests
 from tqdm.autonotebook import tqdm
 import tarfile
-
 
 def http_get(url, path):
     """

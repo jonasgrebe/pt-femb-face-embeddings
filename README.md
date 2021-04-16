@@ -62,6 +62,7 @@ face_model.fit(
 #### TODOS
 - [x] Add links to papers
 - [x] Add inference methods to ```model.py ```
+- [ ] Add requirements.txt
 - [ ] Add comments and documentation
 - [ ] Refactor code
 - [ ] Test implementation 

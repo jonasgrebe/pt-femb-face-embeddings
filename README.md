@@ -47,7 +47,7 @@ face_model.fit(
     evaluation_steps=10,                # number of steps between evaluations
     max_training_steps=20000,           # maximum number of (global) training steps (if zero then max_epochs count is used for stopping)
     max_epochs=0,                       # maximum number of epochs (if zero then max_training_steps is used for stopping)
-    tensorboard=True                    # specify whether or not tensorboard shall be used for embedding projections
+    tensorboard=True                    # specify whether or not tensorboard shall be used for embedding projections and metric monitoring
     )
 ```
 
@@ -58,3 +58,10 @@ face_model.fit(
 + [CosFace Loss](https://arxiv.org/abs/1801.09414) (CosFaceHeader: cos(theta) - m)
 + [ArcFace Loss](https://arxiv.org/abs/1801.07698) (ArcFaceHeader: cos(theta + m))
 + [MagFace Loss](https://arxiv.org/abs/2103.06627) (MagFaceHeader: cos(theta + f_m(x))
+
+#### TODOS
+- [x] Add links to papers
+- [x] Add inference methods to ```model.py ```
+- [ ] Add comments and documentation
+- [ ] Refactor code
+- [ ] Test implementation 

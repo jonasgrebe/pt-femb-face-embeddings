@@ -5,10 +5,17 @@ from femb.backbones import build_backbone
 from femb.headers import ArcFaceHeader
 from femb import FaceEmbeddingModel
 
+# build the backbone embedding network
 backbone = build_backbone(backbone="iresnet18", embed_dim=embed_dim)
-header = ArcFaceHeader(in_features=embed_dim, out_features=train_n_classes)
+
+# create one of the face recognition headers
+# header = ArcFaceHeader(in_features=embed_dim, out_features=train_n_classes)
+header = MagFaceHeader(in_features=embed_dim, out_features=train_n_classes)
+
+# create the ce loss
 loss = torch.nn.CrossEntropyLoss()
 
+# create the face recognition model wrapper
 face_model = FaceEmbeddingModel(backbone=backbone, header=header, loss=loss)
 ```
 
@@ -20,9 +27,11 @@ face_model = FaceEmbeddingModel(backbone=backbone, header=header, loss=loss)
 ```python
 from femb.evaluation import VerificationEvaluator
 
+# create the verification evaluator
 evaluator = VerificationEvaluator(similarity='cos')
-optimizer = torch.optim.SGD(params=face_model.params, lr=1e-1, momentum=0.9, weight_decay=5e-4)
 
+# specify the optimizer (and a scheduler)
+optimizer = torch.optim.SGD(params=face_model.params, lr=1e-2, momentum=0.9, weight_decay=5e-4)
 scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer=optimizer, milestones=[8000, 10000, 160000], gamma=0.1)
 
 # fit the face embedding model to the dataset

@@ -34,13 +34,13 @@ def main():
     print(f"Train Dataset - #images: {len(train_dataset)} - #ids: {train_n_classes}")
     print(f"Val Dataset - #images: {len(val_dataset)} - #ids: {val_n_classes}")
 
-    # build backbone, header and ce loss
+    # build the backbone embedding network
     backbone = build_backbone(backbone="iresnet18", embed_dim=embed_dim)
 
     # create one of the face recognition headers
     #header = LinearHeader(in_features=embed_dim, out_features=train_n_classes)
     # header = SphereFaceHeader(in_features=embed_dim, out_features=train_n_classes)
-    header = CosFaceHeader(in_features=embed_dim, out_features=train_n_classes)
+    # header = CosFaceHeader(in_features=embed_dim, out_features=train_n_classes)
     # header = ArcFaceHeader(in_features=embed_dim, out_features=train_n_classes)
     header = MagFaceHeader(in_features=embed_dim, out_features=train_n_classes)
 
@@ -55,9 +55,7 @@ def main():
 
     # specify the optimizer (and a scheduler)
     optimizer = torch.optim.SGD(params=face_model.params, lr=1e-2, momentum=0.9, weight_decay=5e-4)
-
-    lr_global_step_scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer=optimizer, milestones=[2000, 4000, 6000], gamma=0.1)
-    # lr_epoch_scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer=optimizer, milestones=[2, 3, 4], gamma=0.1)
+    scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer=optimizer, milestones=[2000, 4000, 6000], gamma=0.1)
 
     # fit the face embedding model to the dataset
     face_model.fit(
@@ -66,7 +64,7 @@ def main():
         device='cuda',
         optimizer=optimizer,
         lr_epoch_scheduler=None,
-        lr_global_step_scheduler=None,
+        lr_global_step_scheduler=scheduler,
         evaluator=evaluator,
         val_dataset=val_dataset,
         evaluation_steps=1000,

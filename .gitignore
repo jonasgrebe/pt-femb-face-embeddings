@@ -2,3 +2,4 @@ datasets/
 tensorboard/
 *.pyc
 *.log
+align.py

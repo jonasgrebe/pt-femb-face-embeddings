@@ -53,7 +53,8 @@ face_model.fit(
 
 
 #### Implemented Losses
-+ SphereFace Loss
-+ CosFace Loss
-+ ArcFace Loss
-+ MagFace Loss
++ SoftMax Loss (LinearHeader)
++ [SphereFace Loss](https://arxiv.org/abs/1704.08063) (SphereFaceHeader: cos(m * theta))
++ [CosFace Loss](https://arxiv.org/abs/1801.09414) (CosFaceHeader: cos(theta) - m)
++ [ArcFace Loss](https://arxiv.org/abs/1801.07698) (ArcFaceHeader: cos(theta + m))
++ [MagFace Loss](https://arxiv.org/abs/2103.06627) (MagFaceHeader: cos(theta + f_m(x))

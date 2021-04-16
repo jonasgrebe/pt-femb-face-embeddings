@@ -27,7 +27,8 @@ class MagFaceHeader(ArcFaceHeader):
     def forward(self, input, label):
         # multiply normed features (input) and normed weights to obtain cosine of theta (logits)
         self.linear.weight = torch.nn.Parameter(self.normalize(self.linear.weight))
-        logits = self.linear(self.normalize(input))
+        logits = self.linear(self.normalize(input)).clamp(-1 + self.epsilon, 1 - self.epsilon)
+
 
         # difference compared to arcface
         a = torch.norm(input, dim=1, keepdim=True).clamp(self.l_a, self.u_a)
@@ -35,14 +36,14 @@ class MagFaceHeader(ArcFaceHeader):
         g = self.compute_g(a)
 
         # apply arccos to get theta
-        theta = torch.acos(logits)
+        theta = torch.acos(logits).clamp(-1, 1)
 
         # add angular margin (m) to theta and transform back by cos
         target_logits = torch.cos(theta + m)
 
         # derive one-hot encoding for label
         one_hot = torch.zeros(logits.size(), device=input.device)
-        one_hot.scatter_(1, label.view(-1, 1).long(), 1)
+        one_hot.scatter_(1, label.view(-1, 1).long(), 1.0)
 
         # build the output logits
         output = one_hot * target_logits + (1.0 - one_hot) * logits

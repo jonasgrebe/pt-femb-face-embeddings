@@ -135,12 +135,10 @@ class FaceEmbeddingModel:
     def get_status_format_string(self, epoch, step, train_dataloader, global_step, max_epochs, max_training_steps, train_losses):
         epoch_status = f"Epoch: {epoch+1}"
         status = [epoch_status]
-        if max_epochs > 0:
-            epoch_step_status = f"Step: {step}/{len(train_dataloader)-1} ({step / (len(train_dataloader)-1) * 100:.2f} %)"
-            status.append(epoch_step_status)
-        if max_training_steps > 0:
-            global_step_status = f"Global Step: {global_step}/{max_training_steps} ({global_step / max_training_steps * 100:.2f} %)"
-            status.append(global_step_status)
+
+        global_step_status = f"Global Step: {global_step}/{max_training_steps} ({global_step / max_training_steps * 100:.2f} %)"
+        status.append(global_step_status)
+
         status.append(f"Train_Loss: {train_losses[max([0, step-self.loss_window+1]):step+1].mean()}")
 
         status = ' - '.join(status)

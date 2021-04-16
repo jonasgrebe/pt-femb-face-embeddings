@@ -6,11 +6,11 @@ import numpy as np
 
 class FaceDataset(torch.utils.data.Dataset):
 
-    def __init__(self, name=None, root='datasets/', albu_transform=None):
+    def __init__(self, name=None, root='datasets/', transform=None):
         assert name
         self.name = name
         self.root = root
-        self.albu_transform = albu_transform
+        self.transform = transform
 
         self.img_paths = None
         self.img_id_labels = None
@@ -29,10 +29,8 @@ class FaceDataset(torch.utils.data.Dataset):
 
         img = imread(img_path)
 
-        if self.albu_transform is not None:
-            img = self.albu_transform(image=img)['image']
-
-        img = torchvision.transforms.functional.to_tensor(img).float()
+        if self.transform is not None:
+            img = self.transform(img)
 
         return img, img_label
 

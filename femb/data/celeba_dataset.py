@@ -26,6 +26,7 @@ class CelebADataset(FaceDataset):
 
 
     def download_dataset(self):
+        print(f"Please download the dataset manually and extract it to {self.root}/{self.name}.")
         raise NotImplementedError
 
 

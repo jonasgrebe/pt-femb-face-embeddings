@@ -7,20 +7,26 @@ from femb.evaluation import VerificationEvaluator
 from femb.data import LFWDataset, CelebADataset
 from femb import FaceEmbeddingModel
 
-import albumentations as A
-
-
 def main():
-    embed_dim = 128
+    # specify the size of the embeddings
+    embed_dim = 256
 
-    transform = A.Compose([
-        A.Resize(112, 112),
-        A.Normalize(mean=(0.5,0.5,0.5), std=(0.5,0.5,0.5)),
-        A.HorizontalFlip(),
-    ])
+    # preprocessing transform (assuming alignment and so on)
+    transform = torchvision.transforms.Compose([
+        torchvision.transforms.ToPILImage(),
+        torchvision.transforms.Resize((112, 112)),
+        torchvision.transforms.ToTensor(),
+        torchvision.transforms.Normalize((0.5,0.5,0.5), (0.5,0.5,0.5)),
+        torchvision.transforms.RandomHorizontalFlip()
+        ])
 
-    train_dataset = LFWDataset(split='train', aligned=True, albu_transform=transform)
-    val_dataset = LFWDataset(split='test', aligned=True, albu_transform=transform)
+    # loading the face dataset
+    train_dataset = LFWDataset(split='train', aligned=True, transform=transform)
+    val_dataset = LFWDataset(split='test', aligned=True, transform=transform)
+
+    # shrink the datasets due to limited compute capabilities
+    #train_dataset.reduce_to_N_identities(1000)
+    #val_dataset.reduce_to_N_identities(100)
 
     train_n_classes = train_dataset.get_n_identities()
     val_n_classes = val_dataset.get_n_identities()
@@ -31,21 +37,27 @@ def main():
     # build backbone, header and ce loss
     backbone = build_backbone(backbone="iresnet18", embed_dim=embed_dim)
 
-    # header = LinearHeader(in_features=embed_dim, out_features=train_n_classes)
+    # create one of the face recognition headers
+    #header = LinearHeader(in_features=embed_dim, out_features=train_n_classes)
     # header = SphereFaceHeader(in_features=embed_dim, out_features=train_n_classes)
-    # header = CosFaceHeader(in_features=embed_dim, out_features=train_n_classes)
-    header = ArcFaceHeader(in_features=embed_dim, out_features=train_n_classes)
-    # header = MagFaceHeader(in_features=embed_dim, out_features=train_n_classes)
+    header = CosFaceHeader(in_features=embed_dim, out_features=train_n_classes)
+    # header = ArcFaceHeader(in_features=embed_dim, out_features=train_n_classes)
+    header = MagFaceHeader(in_features=embed_dim, out_features=train_n_classes)
 
+    # create the ce loss
     loss = torch.nn.CrossEntropyLoss()
 
     # create the face recognition model wrapper
     face_model = FaceEmbeddingModel(backbone=backbone, header=header, loss=loss)
 
+    # create the verification evaluator
     evaluator = VerificationEvaluator(similarity='cos')
-    optimizer = torch.optim.Adam(params=face_model.params, lr=1e-1)
 
-    lr_global_step_scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer=optimizer, milestones=[8000, 10000, 160000], gamma=0.1)
+    # specify the optimizer (and a scheduler)
+    optimizer = torch.optim.SGD(params=face_model.params, lr=1e-2, momentum=0.9, weight_decay=5e-4)
+
+    lr_global_step_scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer=optimizer, milestones=[2000, 4000, 6000], gamma=0.1)
+    # lr_epoch_scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer=optimizer, milestones=[2, 3, 4], gamma=0.1)
 
     # fit the face embedding model to the dataset
     face_model.fit(
@@ -57,9 +69,9 @@ def main():
         lr_global_step_scheduler=None,
         evaluator=evaluator,
         val_dataset=val_dataset,
-        evaluation_steps=10,
-        max_training_steps=20000,
-        max_epochs=0,
+        evaluation_steps=1000,
+        max_training_steps=10000,
+        max_epochs=3,
         tensorboard=True
         )
 

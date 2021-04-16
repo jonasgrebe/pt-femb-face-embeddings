@@ -9,4 +9,6 @@ class Evaluator:
 
 
     def evaluate(self, features, labels):
+        # states = {}
+        # return stats
         raise NotImplementedError

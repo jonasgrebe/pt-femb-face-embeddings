@@ -1,4 +1,4 @@
-# femb - Simple Face Embedding Training Library
+# WIP: femb - Simple Face Embedding Training Library
 
 ```python
 from femb.backbones import build_backbone

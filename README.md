@@ -53,11 +53,11 @@ face_model.fit(
 
 
 #### Implemented Losses
-+ SoftMax Loss (LinearHeader)
-+ [SphereFace Loss](https://arxiv.org/abs/1704.08063) (SphereFaceHeader: cos(m * theta))
-+ [CosFace Loss](https://arxiv.org/abs/1801.09414) (CosFaceHeader: cos(theta) - m)
-+ [ArcFace Loss](https://arxiv.org/abs/1801.07698) (ArcFaceHeader: cos(theta + m))
-+ [MagFace Loss](https://arxiv.org/abs/2103.06627) (MagFaceHeader: cos(theta + f_m(x))
++ **SoftMax Loss**: (LinearHeader)
++ **SphereFace Loss**: [Paper](https://arxiv.org/abs/1704.08063) [Code](https://github.com/wy1iu/sphereface) (SphereFaceHeader: cos(m * theta))
++ **CosFace Loss**: [Paper](https://arxiv.org/abs/1801.09414) Code (CosFaceHeader: cos(theta) - m)
++ **ArcFace Loss**: [Paper](https://arxiv.org/abs/1801.07698) [Code](https://github.com/deepinsight/insightface/tree/master/recognition/arcface_torch) (ArcFaceHeader: cos(theta + m))
++ **MagFace Loss**: [Paper](https://arxiv.org/abs/2103.06627) [Code](https://github.com/IrvingMeng/MagFace) (MagFaceHeader: cos(theta + f_m(x))
 
 #### TODOS
 - [x] Add links to papers

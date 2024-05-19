@@ -1,4 +1,5 @@
 import torch
+import torch.nn.functional as F
 
 
 class ArcMarginHeader(torch.nn.Module):
@@ -17,19 +18,19 @@ class ArcMarginHeader(torch.nn.Module):
         self.m2 = m2
         self.m3 = m3
 
-        self.linear = torch.nn.Linear(in_features=in_features, out_features=out_features, bias=False)
-        self.normalize = torch.nn.functional.normalize
+        self.weight = torch.nn.Parameter(torch.FloatTensor(out_features, in_features))
+        torch.nn.init.xavier_uniform_(self.weight)
 
         self.epsilon = 1e-6
 
 
     def forward(self, input, label):
         # multiply normed features (input) and normed weights to obtain cosine of theta (logits)
-        self.linear.weight = torch.nn.Parameter(self.normalize(self.linear.weight))
-        logits = self.linear(self.normalize(input)).clamp(-1 + self.epsilon, 1 - self.epsilon)
+        logits = F.linear(F.normalize(input), F.normalize(self.weight), bias=None)
+        logits = logits.clamp(-1.0 + self.epsilon, 1.0 - self.epsilon)
 
         # apply arccos to get theta
-        theta = torch.acos(logits).clamp(-1, 1)
+        theta = torch.acos(logits)
 
         # add angular margin (m) to theta and transform back by cos
         target_logits = torch.cos(self.m1 * theta + self.m2) - self.m3
